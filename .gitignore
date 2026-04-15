@@ -1,0 +1,83 @@
+# ───────── Python ─────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+.eggs/
+build/
+dist/
+wheels/
+pip-wheel-metadata/
+*.manifest
+*.spec
+
+# ───────── Virtual environments ─────────
+.venv/
+venv/
+env/
+ENV/
+.env
+.envrc
+
+# ───────── Test / coverage ─────────
+.pytest_cache/
+.cache/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+.tox/
+.nox/
+.hypothesis/
+.mypy_cache/
+.ruff_cache/
+.pyre/
+nosetests.xml
+
+# ───────── Node / frontend ─────────
+node_modules/
+.next/
+.nuxt/
+.svelte-kit/
+dist/
+build/
+.parcel-cache/
+.turbo/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+
+# ───────── IDE / OS ─────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ───────── Logs & temp ─────────
+*.log
+logs/
+tmp/
+temp/
+*.tmp
+*.bak
+
+# ───────── Secrets ─────────
+*.pem
+*.key
+.env.local
+.env.*.local
+secrets.json
+
+# ───────── Projet-spécifique ─────────
+# Les JSON de marché sont régénérés par le workflow — à garder en repo.
+# On ignore seulement les dumps ad-hoc éventuels :
+scratch/
+*.local.json

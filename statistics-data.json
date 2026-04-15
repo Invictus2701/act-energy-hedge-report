@@ -1,0 +1,42 @@
+{
+  "meta": {
+    "module": "Statistics",
+    "generatedAt": "2026-04-15T00:00:00Z",
+    "source": "EEX Market Data - Settlement Prices",
+    "currency": "EUR",
+    "unit": "MWh",
+    "ytdStart": "2026-01-01",
+    "sessions": [
+      { "label": "7/4",  "weekday": "Tuesday",   "date": "2026-04-07" },
+      { "label": "8/4",  "weekday": "Wednesday", "date": "2026-04-08" },
+      { "label": "9/4",  "weekday": "Thursday",  "date": "2026-04-09" },
+      { "label": "10/4", "weekday": "Friday",    "date": "2026-04-10" },
+      { "label": "13/4", "weekday": "Monday",    "date": "2026-04-13" },
+      { "label": "14/4", "weekday": "Tuesday",   "date": "2026-04-14" }
+    ]
+  },
+  "markets": [
+    {
+      "group": "ELECTRICITY",
+      "products": [
+        { "code": "BE_POWER_BASE_M1", "label": "BE M+1 base", "prices": [95.01,87.65,88.51,83.30,84.57,83.04], "varD1": -1.81, "varW1": -12.60, "avg": 94.95, "max": 119.21, "min": 73.17 },
+        { "code": "BE_POWER_BASE_Q1", "label": "BE Q+1 base", "prices": [102.67,94.01,95.09,92.07,94.66,92.50], "varD1": -2.29, "varW1": -9.91,  "avg": 82.54, "max": 102.99, "min": 65.78 },
+        { "code": "BE_POWER_BASE_Q2", "label": "BE Q+2 base", "prices": [113.08,104.09,105.38,101.44,104.55,101.43], "varD1": -2.98, "varW1": -10.30, "avg": 85.57, "max": 113.08, "min": 67.33 },
+        { "code": "BE_POWER_BASE_Y1", "label": "BE Y+1 base", "prices": [92.92,86.28,87.47,84.69,86.01,84.37], "varD1": -1.90, "varW1": -9.20,  "avg": 81.78, "max": 95.77, "min": 71.86 },
+        { "code": "BE_POWER_BASE_Y2", "label": "BE Y+2 base", "prices": [77.84,74.88,74.78,73.56,73.88,73.63], "varD1": -0.34, "varW1": -5.41,  "avg": 73.16, "max": 78.74, "min": 67.47 },
+        { "code": "BE_POWER_BASE_Y3", "label": "BE Y+3 base", "prices": [73.73,72.01,72.13,71.36,71.63,71.11], "varD1": -0.73, "varW1": -3.55,  "avg": 70.71, "max": 74.13, "min": 66.76 }
+      ]
+    },
+    {
+      "group": "GAS",
+      "products": [
+        { "code": "TTF_NG_M1", "label": "TTF M+1", "prices": [53.25,45.30,46.18,43.64,46.41,43.37], "varD1": -6.57, "varW1": -18.56, "avg": 41.07, "max": 61.85, "min": 27.40 },
+        { "code": "TTF_NG_Q1", "label": "TTF Q+1", "prices": [53.14,45.43,46.26,43.52,45.85,43.02], "varD1": -6.17, "varW1": -19.04, "avg": 38.92, "max": 61.72, "min": 26.24 },
+        { "code": "TTF_NG_Q2", "label": "TTF Q+2", "prices": [52.62,45.34,46.10,43.26,45.28,42.49], "varD1": -6.14, "varW1": -19.25, "avg": 38.10, "max": 60.89, "min": 26.21 },
+        { "code": "TTF_NG_Y1", "label": "TTF Y+1", "prices": [41.66,37.00,37.23,35.25,36.52,34.74], "varD1": -4.87, "varW1": -16.61, "avg": 31.60, "max": 46.68, "min": 24.74 },
+        { "code": "TTF_NG_Y2", "label": "TTF Y+2", "prices": [29.50,27.60,27.56,26.95,27.35,26.70], "varD1": -2.38, "varW1": -9.50,  "avg": 25.29, "max": 32.21, "min": 22.71 },
+        { "code": "TTF_NG_Y3", "label": "TTF Y+3", "prices": [25.03,24.30,24.15,23.90,24.19,23.75], "varD1": -1.80, "varW1": -5.12,  "avg": 22.61, "max": 25.21, "min": 21.03 }
+      ]
+    }
+  ]
+}

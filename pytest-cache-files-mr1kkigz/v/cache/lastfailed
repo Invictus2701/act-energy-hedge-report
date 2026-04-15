@@ -1,0 +1,3 @@
+{
+  "tests/test_cockpit.py::TestRobustness::test_iso_8859_1_encoding": true
+}
