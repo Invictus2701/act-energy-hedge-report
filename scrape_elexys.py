@@ -128,13 +128,38 @@ def main():
 
     history = load_history()
     today = dt.date.today()
+    expected_settle = prev_business_day(today)
     print("[INFO] Historique courant : %d contrats" % len(history))
 
-    total_upsert = 0
+    # --- Fetch both pages ------------------------------------------------
+    results = {}
     for prefix in (PREFIX_ELEC, PREFIX_GAS):
         rows, settle = fetch_group(prefix)
+        results[prefix] = (rows, settle)
         print("[OK] %s settlement %s : %d contrats scrapes" % (prefix, settle, len(rows)))
 
+    # --- Check for date mismatch (Power page updates later than Gas) -----
+    elec_settle = results[PREFIX_ELEC][1]
+    gas_settle  = results[PREFIX_GAS][1]
+
+    if elec_settle < gas_settle:
+        print("[WARN] Power settlement (%s) behind Gas (%s) -- page not yet updated"
+              % (elec_settle, gas_settle))
+        print("[WARN] Retrying Power page in 60 seconds...")
+        time.sleep(60)
+        rows2, settle2 = fetch_group(PREFIX_ELEC)
+        msg = "[RETRY] %s settlement %s : %d contrats scrapes"
+        print(msg % (PREFIX_ELEC, settle2, len(rows2)))
+        if settle2 > elec_settle:
+            results[PREFIX_ELEC] = (rows2, settle2)
+            print("[OK] Power page updated -- now aligned with Gas")
+        else:
+            print("[WARN] Power page still stale -- saving Gas only for %s" % gas_settle)
+
+    # --- Upsert ----------------------------------------------------------
+    total_upsert = 0
+    for prefix in (PREFIX_ELEC, PREFIX_GAS):
+        rows, settle = results[prefix]
         for suffix, value in rows:
             code = prefix + "|" + suffix
             if args.dry_run:
