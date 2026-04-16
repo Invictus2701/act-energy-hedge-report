@@ -1,0 +1,68 @@
+name: Daily market update (Elexys scrape)
+
+on:
+  schedule:
+    # 20:00 heure de Bruxelles.
+    # GitHub Actions utilise UTC : 18:00 UTC (hiver CET) / 19:00 UTC (été CEST inverse).
+    # On programme les deux créneaux — le script est idempotent (upsert par date).
+    - cron: "0 18 * * 1-5"
+    - cron: "0 19 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily-update
+  cancel-in-progress: false
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install deps
+        run: pip install -r requirements.txt
+
+      - name: Guard — Brussels business day only
+        id: guard
+        run: |
+          # Autorise lun-ven en heure de Bruxelles (Europe/Brussels).
+          WD=$(TZ="Europe/Brussels" date +%u)   # 1=lundi ... 7=dimanche
+          HR=$(TZ="Europe/Brussels" date +%H)
+          echo "Brussels weekday=$WD hour=$HR"
+          if [ "$WD" -ge 6 ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+          elif [ "$HR" != "20" ]; then
+            # évite le double-run (on n'exécute qu'au créneau 20h Bruxelles)
+            echo "skip=true" >> $GITHUB_OUTPUT
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Run scraper
+        if: steps.guard.outputs.skip != 'true'
+        run: python scrape_elexys.py
+
+      - name: Commit updated JSON
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          git config user.name  "cockpit-bot"
+          git config user.email "cockpit-bot@users.noreply.github.com"
+          git add market_history.json statistics-data.json statistics-data.js
+          if git diff --cached --quiet; then
+            echo "No changes."
+          else
+            git commit -m "chore(data): daily market refresh $(TZ=Europe/Brussels date +%F)"
+            git push
+          fi
