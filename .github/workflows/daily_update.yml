@@ -37,14 +37,19 @@ jobs:
       - name: Guard — Brussels business day only
         id: guard
         run: |
-          # Autorise lun-ven en heure de Bruxelles (Europe/Brussels).
+          # workflow_dispatch (manuel) → toujours exécuter
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "Manual trigger — skipping time guard"
+            echo "skip=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          # Cron : autorise lun-ven à 20h heure de Bruxelles uniquement
           WD=$(TZ="Europe/Brussels" date +%u)   # 1=lundi ... 7=dimanche
           HR=$(TZ="Europe/Brussels" date +%H)
           echo "Brussels weekday=$WD hour=$HR"
           if [ "$WD" -ge 6 ]; then
             echo "skip=true" >> $GITHUB_OUTPUT
           elif [ "$HR" != "20" ]; then
-            # évite le double-run (on n'exécute qu'au créneau 20h Bruxelles)
             echo "skip=true" >> $GITHUB_OUTPUT
           else
             echo "skip=false" >> $GITHUB_OUTPUT
