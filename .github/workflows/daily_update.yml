@@ -1,30 +1,36 @@
-name: Daily market update (Elexys scrape)
+name: Daily Luminus Market Sync
 
+# ─────────────────────────────────────────────────────────────
+#  QUAND ?
+#  Luminus publie les settlements vers 17h30 CET.
+#  On programme a 19h30 UTC = 21h30 Bruxelles (ete) / 20h30 (hiver).
+#  Deux creneaux pour couvrir le changement d'heure.
+#  Le script est idempotent (ecrase les fichiers du jour).
+# ─────────────────────────────────────────────────────────────
 on:
   schedule:
-    # 20:00 heure de Bruxelles.
-    # GitHub Actions utilise UTC : 18:00 UTC (hiver CET) / 19:00 UTC (été CEST inverse).
-    # On programme les deux créneaux — le script est idempotent (upsert par date).
-    - cron: "0 18 * * 1-5"
-    - cron: "0 19 * * 1-5"
-  workflow_dispatch: {}
+    - cron: "30 18 * * 1-5"   # 20h30 Bruxelles (hiver CET)
+    - cron: "30 19 * * 1-5"   # 21h30 Bruxelles (ete CEST)
+  workflow_dispatch: {}        # bouton "Run workflow" manuel sur GitHub
 
 permissions:
-  contents: write
+  contents: write              # permet au bot de push les JSON mis a jour
 
 concurrency:
-  group: daily-update
+  group: daily-sync
   cancel-in-progress: false
 
 jobs:
-  scrape:
+  sync:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
     steps:
+      # 1. Recuperer le code du repo
       - name: Checkout
         uses: actions/checkout@v4
 
+      # 2. Installer Python + dependances
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
@@ -34,35 +40,47 @@ jobs:
       - name: Install deps
         run: pip install -r requirements.txt
 
-      - name: Guard — Brussels business day only
+      # 3. Garder : ne tourner que les jours ouvrables Bruxelles
+      - name: Guard - Brussels business day only
         id: guard
         run: |
-          # Autorise lun-ven en heure de Bruxelles (Europe/Brussels).
-          WD=$(TZ="Europe/Brussels" date +%u)   # 1=lundi ... 7=dimanche
-          HR=$(TZ="Europe/Brussels" date +%H)
-          echo "Brussels weekday=$WD hour=$HR"
+          WD=$(TZ="Europe/Brussels" date +%u)   # 1=lun ... 7=dim
+          echo "Brussels weekday=$WD"
           if [ "$WD" -ge 6 ]; then
-            echo "skip=true" >> $GITHUB_OUTPUT
-          elif [ "$HR" != "20" ]; then
-            # évite le double-run (on n'exécute qu'au créneau 20h Bruxelles)
             echo "skip=true" >> $GITHUB_OUTPUT
           else
             echo "skip=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Run scraper
+      # 4. Telecharger les 8 fichiers Excel depuis Luminus
+      - name: Fetch Luminus Excel files
         if: steps.guard.outputs.skip != 'true'
-        run: python scrape_elexys.py
+        run: python scripts/fetch_luminus.py
 
-      - name: Commit updated JSON
+      # 5. Ingerer dans master_history.json + statistics-data.json
+      - name: Process data
+        if: steps.guard.outputs.skip != 'true'
+        run: python scripts/process_data.py --all --strict-validation
+
+      # 6. Copier les JSON dans public/ pour le frontend
+      - name: Update public data
+        if: steps.guard.outputs.skip != 'true'
+        run: |
+          mkdir -p public/data
+          cp data/master_history.json public/data/master_history.json
+          cp data/statistics-data.json public/data/statistics-data.json
+
+      # 7. Commit + push si quelque chose a change
+      - name: Commit updated data
         if: steps.guard.outputs.skip != 'true'
         run: |
           git config user.name  "cockpit-bot"
           git config user.email "cockpit-bot@users.noreply.github.com"
-          git add market_history.json statistics-data.json
+          git add data/ public/data/
           if git diff --cached --quiet; then
-            echo "No changes."
+            echo "No changes to commit."
           else
-            git commit -m "chore(data): daily market refresh $(TZ=Europe/Brussels date +%F)"
+            DATE=$(TZ=Europe/Brussels date +%F)
+            git commit -m "chore(data): daily market refresh $DATE"
             git push
           fi
