@@ -2,7 +2,7 @@
 window.__STATISTICS_DATA__ = {
   "meta": {
     "module": "Statistics",
-    "generatedAt": "2026-04-16T09:13:45Z",
+    "generatedAt": "2026-04-16T09:44:22Z",
     "source": "Elexys daily scrape + XLS history",
     "asof": "2026-04-15",
     "currency": "EUR",
