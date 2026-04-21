@@ -2,8 +2,8 @@
 """
 fetch_luminus.py
 ────────────────────────────────────────────────────────────────────
-Telecharge les 6 rapports Excel Forward depuis le portail public
-Luminus Business Market Info.
+Telecharge les 12 rapports Excel (Forward + Spot) depuis le portail
+public Luminus Business Market Info.
 
 Les fichiers sont de simples liens directs :
   https://my.luminusbusiness.be/market-info/downloads/<filename>.xls
@@ -34,17 +34,25 @@ ROOT    = Path(__file__).resolve().parents[1]
 RAW_DIR = ROOT / "data" / "raw"
 BASE    = "https://my.luminusbusiness.be/market-info/downloads"
 
-# Les 8 rapports Forward utilises par le Cockpit + Hedge Report.
+# Les 12 rapports utilises par le Cockpit + Hedge Report.
 # Cle = nom du fichier sur le serveur (sans extension).
 REPORTS: dict[str, str] = {
+    # Forward Electricite (BE Power)
     "powerbefwd_month":  "Power Forward Monthly",
     "powerbefwd_qtr":    "Power Forward Quarterly",
     "powerbefwd_calall": "Power Forward Yearly (all)",
     "powerbefwd_cal":    "Power Forward Yearly (12M)",
+    # Forward Gaz (TTF)
     "GasTTF_month":      "Gas Forward Monthly",
     "GasTTF_qtr":        "Gas Forward Quarterly",
     "GasTTF_yahall":     "Gas Forward Yearly (all)",
     "GasTTF_yah":        "Gas Forward Yearly (12M)",
+    # Spot Electricite (Belpex)
+    "BelpexHourlyCurrent": "Power Spot Hourly",
+    "BelpexM_avg":         "Power Spot Monthly Avg",
+    # Spot Gaz (TTF Day-Ahead)
+    "GasTtfDah":           "Gas Spot DAH",
+    "GasTtfDahM_avg":      "Gas Spot DAH Monthly Avg",
 }
 
 HEADERS = {
@@ -100,7 +108,7 @@ def fetch_all(target_date: dt.date) -> list[Path]:
 # ──────────────────────────────────────────────────────────────────
 def parse_args(argv: list[str]) -> argparse.Namespace:
     p = argparse.ArgumentParser(
-        description="Telecharge les 6 rapports Forward Luminus Business."
+        description="Telecharge les 12 rapports Forward + Spot Luminus Business."
     )
     p.add_argument(
         "--date",
