@@ -57,10 +57,15 @@ jobs:
         if: steps.guard.outputs.skip != 'true'
         run: python scripts/fetch_luminus.py
 
-      # 5. Ingerer dans master_history.json + statistics-data.json
-      - name: Process data
+      # 5a. Ingerer les Forward dans master_history.json + statistics-data.json
+      - name: Process forward data
         if: steps.guard.outputs.skip != 'true'
         run: python scripts/process_data.py --all --strict-validation
+
+      # 5b. Ingerer les Spot dans spot-data.json
+      - name: Process spot data
+        if: steps.guard.outputs.skip != 'true'
+        run: python scripts/process_spot.py
 
       # 6. Copier les JSON dans public/ pour le frontend
       - name: Update public data
@@ -69,6 +74,7 @@ jobs:
           mkdir -p public/data
           cp data/master_history.json public/data/master_history.json
           cp data/statistics-data.json public/data/statistics-data.json
+          cp data/spot-data.json       public/data/spot-data.json
 
       # 7. Commit + push si quelque chose a change
       - name: Commit updated data

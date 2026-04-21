@@ -1,10 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import Cockpit from "./Cockpit";
+import App from "./App";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <Cockpit />
+    <App />
   </StrictMode>
 );
