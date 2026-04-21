@@ -15,27 +15,42 @@ const C = {
 /* Couleurs des courbes par rang : noir, vert, rouge (comme le prototype) */
 const LINE_COLORS = [C.navy, "#2E8B57", "#C0392B"];
 
-/* ───── Config des 4 graphiques ───── */
+/* ───── Config des 6 graphiques (grille 3 lignes x 2 colonnes) ─────
+   Ordre horizontal : Electricite a gauche, Gaz a droite.
+   Ordre vertical   : Annuel, Trimestriel, Mensuel.                  */
 const CHARTS = [
+  // Ligne 1 : Annuel
   {
-    title: "Gas Forward",
-    codes: ["TTF_NG_Y1", "TTF_NG_Y2", "TTF_NG_Y3"],
-    labels: ["TTF Y+1", "TTF Y+2", "TTF Y+3"],
-  },
-  {
-    title: "Power Forward",
+    title: "Électricité à terme — Annuel",
     codes: ["BE_POWER_BASE_Y1", "BE_POWER_BASE_Y2", "BE_POWER_BASE_Y3"],
-    labels: ["BE Y+1 base", "BE Y+2 base", "BE Y+3 base"],
+    labels: ["BE A+1 base", "BE A+2 base", "BE A+3 base"],
   },
   {
-    title: "FWB Elec",
-    codes: ["BE_POWER_BASE_M1", "BE_POWER_BASE_Q1", "BE_POWER_BASE_Q2"],
-    labels: ["BE M+1 base", "BE Q+1 base", "BE Q+2 base"],
+    title: "Gaz à terme — Annuel",
+    codes: ["TTF_NG_Y1", "TTF_NG_Y2", "TTF_NG_Y3"],
+    labels: ["TTF A+1", "TTF A+2", "TTF A+3"],
+  },
+  // Ligne 2 : Trimestriel
+  {
+    title: "Électricité à terme — Trimestriel",
+    codes: ["BE_POWER_BASE_Q1", "BE_POWER_BASE_Q2", "BE_POWER_BASE_Q3"],
+    labels: ["BE T+1 base", "BE T+2 base", "BE T+3 base"],
   },
   {
-    title: "FWB Gaz",
-    codes: ["TTF_NG_M1", "TTF_NG_Q1", "TTF_NG_Q2"],
-    labels: ["TTF M+1", "TTF Q+1", "TTF Q+2"],
+    title: "Gaz à terme — Trimestriel",
+    codes: ["TTF_NG_Q1", "TTF_NG_Q2", "TTF_NG_Q3"],
+    labels: ["TTF T+1", "TTF T+2", "TTF T+3"],
+  },
+  // Ligne 3 : Mensuel
+  {
+    title: "Électricité à terme — Mensuel",
+    codes: ["BE_POWER_BASE_M1", "BE_POWER_BASE_M2", "BE_POWER_BASE_M3"],
+    labels: ["BE M+1 base", "BE M+2 base", "BE M+3 base"],
+  },
+  {
+    title: "Gaz à terme — Mensuel",
+    codes: ["TTF_NG_M1", "TTF_NG_M2", "TTF_NG_M3"],
+    labels: ["TTF M+1", "TTF M+2", "TTF M+3"],
   },
 ];
 
@@ -48,10 +63,10 @@ const fmtAxis = (v) =>
 
 const fmtDate = (iso) => {
   if (!iso) return "";
-  const [, m, d] = iso.split("-");
-  const months = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  return `${months[parseInt(m)]} '${iso.slice(2, 4)}`;
+  const [, m] = iso.split("-");
+  const mois = ["", "Janv", "Févr", "Mars", "Avr", "Mai", "Juin",
+                "Juil", "Août", "Sept", "Oct", "Nov", "Déc"];
+  return `${mois[parseInt(m)]} '${iso.slice(2, 4)}`;
 };
 
 /* ───── Prepare chart data ───── */
@@ -194,7 +209,7 @@ export default function ChartsGrid() {
           className="text-2xl font-bold tracking-wider uppercase"
           style={{ color: C.navy }}
         >
-          Market Prices &amp; Trends
+          Prix &amp; Tendances du Marché
         </h2>
       </div>
 

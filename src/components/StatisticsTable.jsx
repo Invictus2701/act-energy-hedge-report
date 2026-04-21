@@ -132,11 +132,11 @@ export default function StatisticsTable({ data, onDownloadExcel }) {
             className="text-2xl font-bold tracking-wider uppercase"
             style={{ color: C.navy }}
           >
-            Statistics
+            Statistiques
           </h2>
         </div>
         <p className="text-xs italic" style={{ color: C.navy, opacity: 0.6 }}>
-          * MAX, MIN, AVG &mdash; Since the beginning of the year
+          * MAX, MIN, MOY. &mdash; Depuis le début de l'année
         </p>
       </div>
 
@@ -146,7 +146,7 @@ export default function StatisticsTable({ data, onDownloadExcel }) {
           <thead>
             {/* Column headers */}
             <tr style={{ backgroundColor: C.navy, color: "#FFFFFF" }}>
-              <th className="px-5 py-3 text-left font-semibold">Markets</th>
+              <th className="px-5 py-3 text-left font-semibold">Marchés</th>
               {sessions.map((s) => (
                 <th key={s.date} className="px-3 py-3 text-center font-medium">
                   <div className="text-[11px] opacity-70">{s.label}</div>
@@ -154,12 +154,12 @@ export default function StatisticsTable({ data, onDownloadExcel }) {
                 </th>
               ))}
               <th className="px-3 py-3 text-center font-semibold">
-                Var D-1
+                Var J-1
               </th>
               <th className="px-3 py-3 text-center font-semibold">
-                Var W-1
+                Var S-1
               </th>
-              <th className="px-3 py-3 text-center font-semibold">Avg.</th>
+              <th className="px-3 py-3 text-center font-semibold">Moy.</th>
               <th className="px-3 py-3 text-center font-semibold">Max</th>
               <th className="px-3 py-3 text-center font-semibold">Min</th>
             </tr>
@@ -169,7 +169,7 @@ export default function StatisticsTable({ data, onDownloadExcel }) {
             {data.markets.map((grp) => (
               <React.Fragment key={grp.group}>
                 <GroupHeader
-                  label={grp.group}
+                  label={grp.group === "ELECTRICITY" ? "ÉLECTRICITÉ" : grp.group === "GAS" ? "GAZ" : grp.group}
                   icon={grp.group === "ELECTRICITY" ? <BoltIcon /> : <FlameIcon />}
                   colSpan={totalCols}
                 />
@@ -206,13 +206,13 @@ export default function StatisticsTable({ data, onDownloadExcel }) {
             e.currentTarget.style.color = C.navy;
           }}
         >
-          Download Excel
+          Télécharger Excel
         </button>
       </div>
 
       {/* Last update */}
       <p className="text-right text-xs mt-3 italic" style={{ color: C.navy, opacity: 0.45 }}>
-        Derniere mise a jour : {data.meta.generatedAt?.slice(0, 10) || "N/A"}
+        Dernière mise à jour : {data.meta.generatedAt?.slice(0, 10) || "N/A"}
       </p>
     </section>
   );

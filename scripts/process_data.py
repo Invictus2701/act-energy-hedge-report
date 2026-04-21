@@ -83,33 +83,56 @@ FILE_GROUPS: dict[str, str] = {
     "gas_years":          "GAS",
 }
 
-# Codes produits finaux (12 séries clés)
+# 18 codes produits stockes dans master_history.json (9 tenors x 2 groupes).
+# Les graphiques consomment l'ensemble ; le tableau Statistics ne prend
+# que les 12 produits listes dans STATS_TENORS (ci-dessous).
 CODES_BY_GROUP = {
     "ELECTRICITY": {
-        "M1": "BE_POWER_BASE_M1",
-        "Q1": "BE_POWER_BASE_Q1", "Q2": "BE_POWER_BASE_Q2",
+        "M1": "BE_POWER_BASE_M1", "M2": "BE_POWER_BASE_M2", "M3": "BE_POWER_BASE_M3",
+        "Q1": "BE_POWER_BASE_Q1", "Q2": "BE_POWER_BASE_Q2", "Q3": "BE_POWER_BASE_Q3",
         "Y1": "BE_POWER_BASE_Y1", "Y2": "BE_POWER_BASE_Y2", "Y3": "BE_POWER_BASE_Y3",
     },
     "GAS": {
-        "M1": "TTF_NG_M1",
-        "Q1": "TTF_NG_Q1", "Q2": "TTF_NG_Q2",
+        "M1": "TTF_NG_M1", "M2": "TTF_NG_M2", "M3": "TTF_NG_M3",
+        "Q1": "TTF_NG_Q1", "Q2": "TTF_NG_Q2", "Q3": "TTF_NG_Q3",
         "Y1": "TTF_NG_Y1", "Y2": "TTF_NG_Y2", "Y3": "TTF_NG_Y3",
     },
 }
 
+# Sous-ensemble affiche dans le tableau Statistics (12 produits).
+STATS_TENORS = ("M1", "Q1", "Q2", "Y1", "Y2", "Y3")
+
 PRODUCT_LABELS = {
     "BE_POWER_BASE_M1": "BE M+1 base",
-    "BE_POWER_BASE_Q1": "BE Q+1 base",
-    "BE_POWER_BASE_Q2": "BE Q+2 base",
-    "BE_POWER_BASE_Y1": "BE Y+1 base",
-    "BE_POWER_BASE_Y2": "BE Y+2 base",
-    "BE_POWER_BASE_Y3": "BE Y+3 base",
+    "BE_POWER_BASE_M2": "BE M+2 base",
+    "BE_POWER_BASE_M3": "BE M+3 base",
+    "BE_POWER_BASE_Q1": "BE T+1 base",
+    "BE_POWER_BASE_Q2": "BE T+2 base",
+    "BE_POWER_BASE_Q3": "BE T+3 base",
+    "BE_POWER_BASE_Y1": "BE A+1 base",
+    "BE_POWER_BASE_Y2": "BE A+2 base",
+    "BE_POWER_BASE_Y3": "BE A+3 base",
     "TTF_NG_M1": "TTF M+1",
-    "TTF_NG_Q1": "TTF Q+1",
-    "TTF_NG_Q2": "TTF Q+2",
-    "TTF_NG_Y1": "TTF Y+1",
-    "TTF_NG_Y2": "TTF Y+2",
-    "TTF_NG_Y3": "TTF Y+3",
+    "TTF_NG_M2": "TTF M+2",
+    "TTF_NG_M3": "TTF M+3",
+    "TTF_NG_Q1": "TTF T+1",
+    "TTF_NG_Q2": "TTF T+2",
+    "TTF_NG_Q3": "TTF T+3",
+    "TTF_NG_Y1": "TTF A+1",
+    "TTF_NG_Y2": "TTF A+2",
+    "TTF_NG_Y3": "TTF A+3",
+}
+
+# Traduction des jours de la semaine (strftime("%A") depend de la locale OS,
+# on fige en francais pour garantir la coherence entre Windows / Linux CI).
+WEEKDAYS_FR = {
+    "Monday":    "Lundi",
+    "Tuesday":   "Mardi",
+    "Wednesday": "Mercredi",
+    "Thursday":  "Jeudi",
+    "Friday":    "Vendredi",
+    "Saturday":  "Samedi",
+    "Sunday":    "Dimanche",
 }
 
 # Benchmark de validation (cf. brief)
@@ -129,8 +152,8 @@ VALIDATION_TOLERANCE = 0.005  # 0.5 %
 # ──────────────────────────────────────────────────────────────────
 def classify_tenor(label: str, observation: dt.date) -> str | None:
     """Convertit un libellé contrat ('May-26', 'Q3-26', 'Cal-27') en tenor
-    (M1/Q1/Q2/Y1/Y2/Y3) relatif à la date d'observation. Retourne None
-    si hors périmètre."""
+    (M1..M3 / Q1..Q3 / Y1..Y3) relatif à la date d'observation. Retourne
+    None si hors périmètre."""
     p = str(label).strip()
     y2 = observation.year % 100
 
@@ -145,14 +168,14 @@ def classify_tenor(label: str, observation: dt.date) -> str | None:
         q, yy = int(m.group(1)), int(m.group(2)) % 100
         q_now = (observation.month - 1) // 3 + 1
         diff_q = (yy - y2) * 4 + (q - q_now)
-        return f"Q{diff_q}" if 1 <= diff_q <= 2 else None
+        return f"Q{diff_q}" if 1 <= diff_q <= 3 else None
 
     m = re.match(r"^([A-Za-z]{3})[-\s]?(\d{2,4})$", p)
     if m and m.group(1)[:3].lower() in MONTHS:
         mm = MONTHS[m.group(1)[:3].lower()]
         yy = int(m.group(2)) % 100
         diff_m = (yy - y2) * 12 + (mm - observation.month)
-        return "M1" if diff_m == 1 else None
+        return f"M{diff_m}" if 1 <= diff_m <= 3 else None
 
     return None
 
@@ -347,7 +370,7 @@ def build_statistics(history: dict[str, dict[str, float]], today: dt.date) -> di
     sessions_d = _last_business_days(6, anchor)
     sessions = [{
         "label":   f"{d.day}/{d.month}",
-        "weekday": d.strftime("%A"),
+        "weekday": WEEKDAYS_FR.get(d.strftime("%A"), d.strftime("%A")),
         "date":    d.isoformat(),
     } for d in sessions_d]
     ytd_iso = YTD_START.isoformat()
@@ -387,12 +410,12 @@ def build_statistics(history: dict[str, dict[str, float]], today: dt.date) -> di
             "avg": avg, "max": mx, "min": mn,
         }
 
-    electricity = [product_block(c) for c in CODES_BY_GROUP["ELECTRICITY"].values()]
-    gas         = [product_block(c) for c in CODES_BY_GROUP["GAS"].values()]
+    electricity = [product_block(CODES_BY_GROUP["ELECTRICITY"][t]) for t in STATS_TENORS]
+    gas         = [product_block(CODES_BY_GROUP["GAS"][t]) for t in STATS_TENORS]
 
     return {
         "meta": {
-            "module": "Statistics",
+            "module": "Statistiques",
             "generatedAt": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
             "source": "Luminus Business — https://my.luminusbusiness.be/market-info/",
             "currency": "EUR", "unit": "MWh",

@@ -45,7 +45,7 @@ export default function Cockpit() {
             onClick={downloadPdf}
             className="px-5 py-2 border-2 border-navy rounded-md text-navy text-sm font-semibold hover:bg-navy hover:text-white transition-colors"
           >
-            Download PDF
+            Télécharger PDF
           </button>
         </div>
       </header>
