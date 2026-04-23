@@ -38,9 +38,12 @@ export default function Spot() {
         </h2>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {/* Chaque ligne de graphiques = une pdf-section (1 page PDF dediee). */}
+      <div className="pdf-section grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
         <BelpexHourlyChart data={data.belpexHourly} />
         <TtfDahDailyChart  data={data.ttfDahDaily} />
+      </div>
+      <div className="pdf-section grid grid-cols-1 md:grid-cols-2 gap-6">
         <MonthlyAvgChart
           title="Belpex — Moyennes mensuelles par année"
           source="EPEX Spot Belgium (Belpex)"

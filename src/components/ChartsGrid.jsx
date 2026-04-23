@@ -163,14 +163,13 @@ function ChartPanel({ title, codes, labels, history }) {
               className={i % 2 === 0 ? "bg-gray-50" : "bg-white"}
             >
               <td className="px-3 py-1.5 font-medium" style={{ color: C.navy }}>
-                {labels[i]}{" "}
-                <span className="opacity-40">(EUR/MWh)</span>
+                {labels[i]}
               </td>
               <td
                 className="px-3 py-1.5 text-right font-semibold tabular-nums"
                 style={{ color: C.navy }}
               >
-                {fmt(lastRow[code])}
+                {fmt(lastRow[code])} €/MWh
               </td>
             </tr>
           ))}
@@ -200,9 +199,19 @@ export default function ChartsGrid() {
 
   if (!history) return null;
 
+  // Groupe les graphiques en lignes de 2 (Elec + Gaz), chaque ligne
+  // correspond a une granularite (Annuel / Trimestriel / Mensuel).
+  // Chaque ligne est une .pdf-section => une page PDF dediee.
+  const rows = [];
+  for (let i = 0; i < CHARTS.length; i += 2) {
+    rows.push(CHARTS.slice(i, i + 2));
+  }
+  const ROW_TITLES = ["Annuel", "Trimestriel", "Mensuel"];
+
   return (
     <section className="mt-10">
-      {/* Title */}
+      {/* Title : reste en dehors des pdf-section pour ne pas occuper une
+          page entiere a lui seul. Apparait en tete de la 1ere ligne via CSS. */}
       <div className="flex items-center gap-3 mb-5">
         <TrendIcon />
         <h2
@@ -213,18 +222,23 @@ export default function ChartsGrid() {
         </h2>
       </div>
 
-      {/* 2x2 grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {CHARTS.map((cfg) => (
-          <ChartPanel
-            key={cfg.title}
-            title={cfg.title}
-            codes={cfg.codes}
-            labels={cfg.labels}
-            history={history}
-          />
-        ))}
-      </div>
+      {/* Une .pdf-section par ligne (2 graphiques Elec + Gaz). */}
+      {rows.map((row, i) => (
+        <div
+          key={ROW_TITLES[i] || i}
+          className="pdf-section grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"
+        >
+          {row.map((cfg) => (
+            <ChartPanel
+              key={cfg.title}
+              title={cfg.title}
+              codes={cfg.codes}
+              labels={cfg.labels}
+              history={history}
+            />
+          ))}
+        </div>
+      ))}
     </section>
   );
 }

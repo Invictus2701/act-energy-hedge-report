@@ -61,6 +61,6 @@ export function downloadExcel(data) {
 
   XLSX.utils.book_append_sheet(wb, ws, "Statistiques");
 
-  const lastSession = sessions[sessions.length - 1]?.date || "export";
-  XLSX.writeFile(wb, `Cockpit_ACT_Energy_${lastSession}.xlsx`);
+  const today = new Date().toISOString().slice(0, 10);
+  XLSX.writeFile(wb, `Act-Energy-Future-${today}.xlsx`);
 }

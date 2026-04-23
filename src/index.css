@@ -16,3 +16,16 @@ body {
   color: #262E4B;
   margin: 0;
 }
+
+/* PriceCorridor : le bloc .corridor-details est masque par defaut,
+   affiche au survol de la cellule entiere (.corridor-cell:hover),
+   et force a etre visible pendant un export PDF (body.pdf-exporting). */
+.corridor-details {
+  display: none;
+}
+.corridor-cell:hover .corridor-details {
+  display: block;
+}
+body.pdf-exporting .corridor-details {
+  display: block !important;
+}

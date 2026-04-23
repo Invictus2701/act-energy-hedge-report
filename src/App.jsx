@@ -51,7 +51,7 @@ export default function App() {
         <div className="flex items-center gap-4">
           <span className="text-sm capitalize" style={{ color: `${C.navy}99` }}>{today}</span>
           <button
-            onClick={downloadPdf}
+            onClick={() => downloadPdf(tab)}
             className="px-5 py-2 border-2 rounded-md text-sm font-semibold transition-colors"
             style={{ borderColor: C.navy, color: C.navy }}
             onMouseEnter={(e) => {

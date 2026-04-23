@@ -403,10 +403,27 @@ def build_statistics(history: dict[str, dict[str, float]], today: dt.date) -> di
         mx  = round(max(ytd), 2) if ytd else None
         mn  = round(min(ytd), 2) if ytd else None
 
+        # Volatilite YTD : ecart-type des rendements journaliers en %
+        # (variation relative d'un jour au suivant). Permet au frontend
+        # de calculer un z-score des variations J-1/S-1 pour moduler
+        # l'intensite de couleur selon l'anomalie de marche.
+        sigma_d = None
+        ytd_sorted = [(k, v) for k, v in sorted(series.items())
+                      if k >= ytd_iso and v is not None]
+        if len(ytd_sorted) >= 3:
+            rets = []
+            for (_, p_prev), (_, p_curr) in zip(ytd_sorted, ytd_sorted[1:]):
+                if p_prev and p_prev > 0:
+                    rets.append((p_curr - p_prev) / p_prev * 100)
+            if len(rets) >= 2:
+                mean_r = sum(rets) / len(rets)
+                var_r  = sum((r - mean_r) ** 2 for r in rets) / (len(rets) - 1)
+                sigma_d = round(var_r ** 0.5, 3)
+
         return {
             "code": code, "label": PRODUCT_LABELS[code],
             "prices": [round(p, 2) if p is not None else None for p in prices],
-            "varD1": var_d1, "varW1": var_w1,
+            "varD1": var_d1, "varW1": var_w1, "sigmaD": sigma_d,
             "avg": avg, "max": mx, "min": mn,
         }
 

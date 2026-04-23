@@ -1,4 +1,5 @@
 import React from "react";
+import PriceCorridor from "./PriceCorridor";
 
 /* ───── Palette ACT Energy ───── */
 const C = {
@@ -45,19 +46,15 @@ const fmt = (v) =>
         maximumFractionDigits: 2,
       });
 
-const fmtPct = (v) =>
-  v == null || isNaN(v)
-    ? "\u2014"
-    : `${v > 0 ? "+" : ""}${Number(v).toFixed(2)}%`;
-
-/* ───── Variation cell color ───── */
-function varStyle(v) {
-  if (v == null || isNaN(v)) return {};
-  // Negatif = vert, positif ou zero = orange (gold)
-  return v < 0
-    ? { backgroundColor: C.green, color: C.navy }
-    : { backgroundColor: C.gold, color: C.navy };
-}
+/* ───── Helpers ───── */
+// Dernier prix disponible (rightmost non-null) dans le tableau des 6 sessions
+const currentPrice = (prices) => {
+  if (!prices?.length) return null;
+  for (let i = prices.length - 1; i >= 0; i--) {
+    if (prices[i] != null && !isNaN(prices[i])) return prices[i];
+  }
+  return null;
+};
 
 /* ───── Sub-components ───── */
 function GroupHeader({ label, icon, colSpan }) {
@@ -82,8 +79,7 @@ function ProductRow({ product, sessions, isEven }) {
     <tr style={{ backgroundColor: isEven ? C.rowEven : C.rowOdd }}>
       {/* Label */}
       <td className="px-5 py-3 font-medium whitespace-nowrap" style={{ color: C.navy }}>
-        {product.label}{" "}
-        <span className="text-xs opacity-50">(EUR/MWh)</span>
+        {product.label}
       </td>
 
       {/* 6 session prices */}
@@ -93,25 +89,17 @@ function ProductRow({ product, sessions, isEven }) {
         </td>
       ))}
 
-      {/* Moy / Min / Max */}
-      <td className="px-3 py-3 text-center tabular-nums" style={{ color: C.navy }}>{fmt(product.avg)}</td>
-      <td className="px-3 py-3 text-center tabular-nums" style={{ color: C.navy }}>{fmt(product.min)}</td>
-      <td className="px-3 py-3 text-center tabular-nums" style={{ color: C.navy }}>{fmt(product.max)}</td>
-
-      {/* Var J-1 */}
-      <td
-        className="px-3 py-3 text-center font-semibold text-sm tabular-nums"
-        style={varStyle(product.varD1)}
-      >
-        {fmtPct(product.varD1)}
-      </td>
-
-      {/* Var S-1 */}
-      <td
-        className="px-3 py-3 text-center font-semibold text-sm tabular-nums"
-        style={varStyle(product.varW1)}
-      >
-        {fmtPct(product.varW1)}
+      {/* Plage YTD + Deltas J-1/S-1 contextualises par sigma */}
+      <td className="px-3 py-3">
+        <PriceCorridor
+          current={currentPrice(product.prices)}
+          min={product.min}
+          max={product.max}
+          avg={product.avg}
+          varD1={product.varD1}
+          varW1={product.varW1}
+          sigmaD={product.sigmaD}
+        />
       </td>
     </tr>
   );
@@ -120,10 +108,10 @@ function ProductRow({ product, sessions, isEven }) {
 /* ───── Main component ───── */
 export default function StatisticsTable({ data, onDownloadExcel }) {
   const { sessions } = data.meta;
-  const totalCols = 1 + sessions.length + 5; // label + dates + var×2 + avg/max/min
+  const totalCols = 1 + sessions.length + 1; // label + dates + corridor (var integres dedans)
 
   return (
-    <section>
+    <section className="pdf-section">
       {/* Title row */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-3">
@@ -135,9 +123,6 @@ export default function StatisticsTable({ data, onDownloadExcel }) {
             Statistiques
           </h2>
         </div>
-        <p className="text-xs italic" style={{ color: C.navy, opacity: 0.6 }}>
-          * MAX, MIN, MOY. &mdash; Depuis le début de l'année
-        </p>
       </div>
 
       {/* Table */}
@@ -153,14 +138,8 @@ export default function StatisticsTable({ data, onDownloadExcel }) {
                   <div className="text-xs">{s.weekday}</div>
                 </th>
               ))}
-              <th className="px-3 py-3 text-center font-semibold">Moy.</th>
-              <th className="px-3 py-3 text-center font-semibold">Min</th>
-              <th className="px-3 py-3 text-center font-semibold">Max</th>
-              <th className="px-3 py-3 text-center font-semibold">
-                Var J-1
-              </th>
-              <th className="px-3 py-3 text-center font-semibold">
-                Var S-1
+              <th className="px-3 py-3 text-center font-semibold" style={{ minWidth: 380 }}>
+                Plage YTD & Variations
               </th>
             </tr>
           </thead>
@@ -169,7 +148,7 @@ export default function StatisticsTable({ data, onDownloadExcel }) {
             {data.markets.map((grp) => (
               <React.Fragment key={grp.group}>
                 <GroupHeader
-                  label={grp.group === "ELECTRICITY" ? "ÉLECTRICITÉ" : grp.group === "GAS" ? "GAZ" : grp.group}
+                  label={grp.group === "ELECTRICITY" ? "ÉLECTRICITÉ (€/MWh)" : grp.group === "GAS" ? "GAZ (€/MWh)" : grp.group}
                   icon={grp.group === "ELECTRICITY" ? <BoltIcon /> : <FlameIcon />}
                   colSpan={totalCols}
                 />
@@ -185,6 +164,46 @@ export default function StatisticsTable({ data, onDownloadExcel }) {
             ))}
           </tbody>
         </table>
+      </div>
+
+      {/* Legende : couleur du point sur le bullet + intensite pastilles J-1/S-1 */}
+      <div className="mt-4 px-4 py-3 rounded-md text-xs leading-relaxed space-y-2"
+           style={{ backgroundColor: "#FAFAF7", color: C.navy, border: `1px solid ${C.navy}10` }}>
+
+        {/* Legende couleur du point (bullet chart) */}
+        <div className="flex items-center gap-4 flex-wrap">
+          <span className="inline-flex items-center gap-1.5 text-[11px]">
+            <span className="inline-block w-3 h-3 rounded-full" style={{ backgroundColor: C.green, border: "2px solid #FFFFFF", boxShadow: "0 1px 2px rgba(0,0,0,0.15)" }} />
+            Prix bas &mdash; opportunité d'achat
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-[11px]">
+            <span className="inline-block w-3 h-3 rounded-full" style={{ backgroundColor: C.navy, border: "2px solid #FFFFFF", boxShadow: "0 1px 2px rgba(0,0,0,0.15)" }} />
+            Prix moyen &mdash; zone neutre
+          </span>
+          <span className="inline-flex items-center gap-1.5 text-[11px]">
+            <span className="inline-block w-3 h-3 rounded-full" style={{ backgroundColor: C.gold, border: "2px solid #FFFFFF", boxShadow: "0 1px 2px rgba(0,0,0,0.15)" }} />
+            Prix haut &mdash; zone d'alerte
+          </span>
+          <span className="text-[11px] opacity-70 ml-auto">
+            MAX, MIN, MOY. &mdash; Depuis le début de l'année
+          </span>
+        </div>
+
+        {/* Legende couleur des pastilles J-1 / S-1 : echelle divergente vert -> blanc -> rouge */}
+        <div className="flex items-center gap-3 flex-wrap pt-1" style={{ borderTop: `1px solid ${C.navy}10` }}>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] tabular-nums">−10&nbsp;%</span>
+            <span className="inline-block w-48 h-4 rounded-sm shrink-0"
+                  style={{
+                    background: "linear-gradient(to right, #0B5D1E 0%, #FFFFFF 50%, #8B0000 100%)",
+                    border: "1px solid rgba(38, 46, 75, 0.15)",
+                  }} />
+            <span className="text-[11px] tabular-nums">+10&nbsp;%</span>
+          </div>
+          <span className="text-[11px] opacity-70 ml-auto">
+            Couleur des pastilles J-1&nbsp;/&nbsp;S-1 selon l'ampleur du mouvement
+          </span>
+        </div>
       </div>
 
       {/* Footer button */}
