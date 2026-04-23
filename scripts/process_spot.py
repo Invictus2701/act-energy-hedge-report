@@ -70,10 +70,19 @@ def _to_float(v):
 # ──────────────────────────────────────────────────────────────────
 #  Parsers
 # ──────────────────────────────────────────────────────────────────
+def _iso_week_range(year: int, week: int) -> tuple[dt.date, dt.date]:
+    """Renvoie (lundi, dimanche) d'une semaine ISO donnee."""
+    monday = dt.date.fromisocalendar(year, week, 1)
+    sunday = monday + dt.timedelta(days=6)
+    return monday, sunday
+
+
 def parse_belpex_hourly(df: pd.DataFrame) -> dict:
     """Belpex 168h par semaine.
     Header : ['Start Date', 'Week 16', 'Week 17'].
     Body   : ['Mon 00:00', 115, 131.92], ..., ['Sun 23:00', ...]."""
+    import re
+
     header = df.iloc[0].tolist()
     body   = df.iloc[1:].reset_index(drop=True)
 
@@ -87,10 +96,36 @@ def parse_belpex_hourly(df: pd.DataFrame) -> dict:
                 break
         x_labels.append(s)
 
+    # Annee de reference : la plus recente possible compatible avec les numeros
+    # de semaine presents. Luminus publie la semaine courante + la precedente,
+    # donc les N de semaine correspondent a l'annee courante sauf en tout
+    # debut d'annee (cas bord : semaine 1 apres semaine 52 -> annee N+1).
+    today = dt.date.today()
+    today_year, today_week, _ = today.isocalendar()
+
     weeks = []
     for j in range(1, len(header)):
-        label = str(header[j]).strip()  # e.g. "Week 17"
-        fr_label = label.replace("Week", "Semaine")
+        raw_label = str(header[j]).strip()
+        fr_label  = raw_label.replace("Week", "Semaine")
+
+        m = re.search(r"(\d{1,2})", raw_label)
+        if m:
+            wk = int(m.group(1))
+            # Choix de l'annee : si wk > today_week + 2, c'est de l'annee
+            # precedente (cas du passage decembre -> janvier).
+            year = today_year
+            if wk > today_week + 2:
+                year -= 1
+            try:
+                mon, sun = _iso_week_range(year, wk)
+                fr_label = (
+                    f"Semaine {wk} "
+                    f"({mon.day:02d}/{mon.month:02d} -> "
+                    f"{sun.day:02d}/{sun.month:02d})"
+                )
+            except ValueError:
+                pass
+
         values = [_to_float(v) for v in body.iloc[:, j].tolist()]
         weeks.append({"label": fr_label, "values": values})
 

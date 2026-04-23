@@ -6,7 +6,7 @@ import { downloadPdf } from "./utils/exportPdf";
 const C = { navy: "#262E4B", gold: "#D3A021" };
 
 function ActEnergyLogo() {
-  return <img src="/logo-actenergy.png" alt="ACT Energy" className="h-10" />;
+  return <img src={`${import.meta.env.BASE_URL}logo-actenergy.png`} alt="ACT Energy" className="h-10" />;
 }
 
 function TabButton({ active, onClick, children }) {

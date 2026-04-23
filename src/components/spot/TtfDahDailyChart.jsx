@@ -34,6 +34,13 @@ export default function TtfDahDailyChart({ data }) {
           <YAxis
             tick={{ fontSize: 10, fill: "#9CA3AF" }}
             width={50}
+            // Zoom auto sur la plage des valeurs (+/- 5% de padding).
+            // Evite que l'axe parte de 0 quand le prix varie peu.
+            domain={[
+              (dataMin) => Math.floor(dataMin - Math.max(0.5, dataMin * 0.05)),
+              (dataMax) => Math.ceil(dataMax + Math.max(0.5, dataMax * 0.05)),
+            ]}
+            allowDecimals={false}
             label={{ value: "EUR/MWh", angle: -90, position: "insideLeft",
                      style: { fontSize: 10, fill: "#9CA3AF" } }}
           />

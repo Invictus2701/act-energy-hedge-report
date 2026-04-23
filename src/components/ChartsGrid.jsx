@@ -192,7 +192,7 @@ export default function ChartsGrid() {
   const [history, setHistory] = useState(null);
 
   useEffect(() => {
-    fetch("/data/master_history.json")
+    fetch(`${import.meta.env.BASE_URL}data/master_history.json`)
       .then((r) => r.json())
       .then(setHistory)
       .catch((e) => console.error("ChartsGrid load error:", e));
