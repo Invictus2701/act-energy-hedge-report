@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-04-23T14:32:31Z",
+    "generatedAt": "2026-04-23T19:47:45Z",
     "source": "Luminus Business - EPEX Spot (Belpex) / ICIS Heren (TTF DAH)",
     "sourceDir": "2026-04-23"
   },
@@ -448,30 +448,30 @@
           111.1,
           106.2,
           94.88,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
+          90.02,
+          93.84,
+          95.58,
+          97.08,
+          94.69,
+          101.42,
+          121.7,
+          140.93,
+          143.02,
+          120.0,
+          28.77,
+          -0.04,
+          -6.91,
+          -26.08,
+          -29.9,
+          -16.52,
+          -1.58,
+          40.5,
+          98.82,
+          135.2,
+          160.8,
+          161.3,
+          134.94,
+          121.84,
           null,
           null,
           null,
@@ -698,10 +698,10 @@
         "group": "ELEC",
         "values": [
           106.18,
-          80.68
+          80.37
         ],
-        "delta": -25.5,
-        "deltaPct": -24.02
+        "delta": -25.81,
+        "deltaPct": -24.31
       },
       {
         "code": "ELEC_PEAK",
@@ -709,10 +709,10 @@
         "group": "ELEC",
         "values": [
           127.38,
-          107.15
+          108.59
         ],
-        "delta": -20.23,
-        "deltaPct": -15.88
+        "delta": -18.79,
+        "deltaPct": -14.75
       },
       {
         "code": "ELEC_OFFPEAK",
@@ -720,10 +720,10 @@
         "group": "ELEC",
         "values": [
           93.46,
-          64.8
+          63.44
         ],
-        "delta": -28.66,
-        "deltaPct": -30.67
+        "delta": -30.02,
+        "deltaPct": -32.12
       }
     ]
   }
