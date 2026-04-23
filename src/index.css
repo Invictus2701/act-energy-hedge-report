@@ -41,3 +41,62 @@ body.pdf-exporting .corridor-details {
 body.pdf-exporting .slope-deltas {
   display: flex !important;
 }
+
+/* ─────────────────────────────────────────────────────────────
+   Regles @media print : le bouton "Telecharger PDF" declenche
+   window.print() qui ouvre le dialogue natif du navigateur.
+   Ces regles definissent ce qui doit apparaitre sur le PDF.
+   ───────────────────────────────────────────────────────────── */
+@media print {
+  /* Format par defaut : A4 paysage, marges raisonnables */
+  @page {
+    size: A4 landscape;
+    margin: 10mm;
+  }
+
+  /* Preserver les couleurs de fond (pills colorees, corridors, etc.) */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Masquer les elements d'UI : header superieur, tabs, boutons */
+  body > div > header,
+  body > div > nav,
+  button {
+    display: none !important;
+  }
+
+  /* Zone principale : pleine largeur, sans conteneur central */
+  #cockpit-printable {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  /* Reveler les details habituellement masques (Min/Max/Moy + deltas slope) */
+  .corridor-details {
+    display: block !important;
+  }
+  .slope-deltas {
+    display: flex !important;
+  }
+
+  /* Un saut de page avant chaque .pdf-section, jamais de coupe au milieu */
+  .pdf-section {
+    page-break-before: always;
+    break-before: page;
+    page-break-inside: avoid;
+    break-inside: avoid;
+  }
+  /* La premiere section n'a pas besoin de saut de page avant */
+  .pdf-section:first-of-type {
+    page-break-before: auto;
+    break-before: auto;
+  }
+
+  /* Couleurs : forcer le fond blanc et conserver le texte en navy */
+  body {
+    background: #FFFFFF !important;
+    color: #262E4B !important;
+  }
+}
