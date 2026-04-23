@@ -93,7 +93,12 @@ function ProductRow({ product, sessions, isEven }) {
         </td>
       ))}
 
-      {/* Var D-1 */}
+      {/* Moy / Min / Max */}
+      <td className="px-3 py-3 text-center tabular-nums" style={{ color: C.navy }}>{fmt(product.avg)}</td>
+      <td className="px-3 py-3 text-center tabular-nums" style={{ color: C.navy }}>{fmt(product.min)}</td>
+      <td className="px-3 py-3 text-center tabular-nums" style={{ color: C.navy }}>{fmt(product.max)}</td>
+
+      {/* Var J-1 */}
       <td
         className="px-3 py-3 text-center font-semibold text-sm tabular-nums"
         style={varStyle(product.varD1)}
@@ -101,18 +106,13 @@ function ProductRow({ product, sessions, isEven }) {
         {fmtPct(product.varD1)}
       </td>
 
-      {/* Var W-1 */}
+      {/* Var S-1 */}
       <td
         className="px-3 py-3 text-center font-semibold text-sm tabular-nums"
         style={varStyle(product.varW1)}
       >
         {fmtPct(product.varW1)}
       </td>
-
-      {/* Avg / Max / Min */}
-      <td className="px-3 py-3 text-center tabular-nums" style={{ color: C.navy }}>{fmt(product.avg)}</td>
-      <td className="px-3 py-3 text-center tabular-nums" style={{ color: C.navy }}>{fmt(product.max)}</td>
-      <td className="px-3 py-3 text-center tabular-nums" style={{ color: C.navy }}>{fmt(product.min)}</td>
     </tr>
   );
 }
@@ -153,15 +153,15 @@ export default function StatisticsTable({ data, onDownloadExcel }) {
                   <div className="text-xs">{s.weekday}</div>
                 </th>
               ))}
+              <th className="px-3 py-3 text-center font-semibold">Moy.</th>
+              <th className="px-3 py-3 text-center font-semibold">Min</th>
+              <th className="px-3 py-3 text-center font-semibold">Max</th>
               <th className="px-3 py-3 text-center font-semibold">
                 Var J-1
               </th>
               <th className="px-3 py-3 text-center font-semibold">
                 Var S-1
               </th>
-              <th className="px-3 py-3 text-center font-semibold">Moy.</th>
-              <th className="px-3 py-3 text-center font-semibold">Max</th>
-              <th className="px-3 py-3 text-center font-semibold">Min</th>
             </tr>
           </thead>
 

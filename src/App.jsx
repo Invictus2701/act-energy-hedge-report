@@ -24,8 +24,17 @@ function TabButton({ active, onClick, children }) {
   );
 }
 
+function HedgeCoverageTab() {
+  return (
+    <div className="text-center py-20" style={{ color: `${C.navy}88` }}>
+      <h2 className="text-xl font-semibold mb-2">Rapport de couverture</h2>
+      <p className="text-sm">Cette section sera implémentée prochainement.</p>
+    </div>
+  );
+}
+
 export default function App() {
-  const [tab, setTab] = useState("hedge");
+  const [tab, setTab] = useState("future");
 
   const today = new Date().toLocaleDateString("fr-FR", {
     weekday: "long",
@@ -61,17 +70,22 @@ export default function App() {
 
       {/* Tabs */}
       <nav className="flex px-8 border-b border-gray-100 bg-white sticky top-0 z-10">
-        <TabButton active={tab === "hedge"} onClick={() => setTab("hedge")}>
-          Hedge Report
+        <TabButton active={tab === "future"} onClick={() => setTab("future")}>
+          Future
         </TabButton>
         <TabButton active={tab === "spot"} onClick={() => setTab("spot")}>
           Spot
+        </TabButton>
+        <TabButton active={tab === "coverage"} onClick={() => setTab("coverage")}>
+          Rapport de couverture
         </TabButton>
       </nav>
 
       {/* Main */}
       <main id="cockpit-printable" className="max-w-[1400px] mx-auto px-8 py-8">
-        {tab === "hedge" ? <Cockpit /> : <Spot />}
+        {tab === "future"   && <Cockpit />}
+        {tab === "spot"     && <Spot />}
+        {tab === "coverage" && <HedgeCoverageTab />}
       </main>
     </div>
   );
