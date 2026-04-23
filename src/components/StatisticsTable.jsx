@@ -74,7 +74,7 @@ function GroupHeader({ label, icon, colSpan }) {
   );
 }
 
-function ProductRow({ product, sessions, isEven }) {
+function ProductRow({ product, sessions, isEven, rowIndex = 0 }) {
   return (
     <tr style={{ backgroundColor: isEven ? C.rowEven : C.rowOdd }}>
       {/* Label */}
@@ -96,6 +96,7 @@ function ProductRow({ product, sessions, isEven }) {
           min={product.min}
           max={product.max}
           avg={product.avg}
+          animationDelay={rowIndex * 80}
           varD1={product.varD1}
           varW1={product.varW1}
           sigmaD={product.sigmaD}
@@ -145,7 +146,7 @@ export default function StatisticsTable({ data, onDownloadExcel }) {
           </thead>
 
           <tbody>
-            {data.markets.map((grp) => (
+            {data.markets.map((grp, g) => (
               <React.Fragment key={grp.group}>
                 <GroupHeader
                   label={grp.group === "ELECTRICITY" ? "ÉLECTRICITÉ (€/MWh)" : grp.group === "GAS" ? "GAZ (€/MWh)" : grp.group}
@@ -158,6 +159,9 @@ export default function StatisticsTable({ data, onDownloadExcel }) {
                     product={p}
                     sessions={sessions}
                     isEven={i % 2 === 0}
+                    // rowIndex global (tous groupes confondus) -> cascade
+                    // continue de haut en bas du tableau
+                    rowIndex={g * grp.products.length + i}
                   />
                 ))}
               </React.Fragment>

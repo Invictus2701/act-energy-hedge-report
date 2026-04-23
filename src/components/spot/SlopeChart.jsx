@@ -107,7 +107,7 @@ export default function SlopeChart({ data }) {
                       const s = data.series.find((x) => x.code === code);
                       return s ? s.label : code;
                     }} />
-            {data.series.map((s) => (
+            {data.series.map((s, i) => (
               <Line
                 key={s.code}
                 dataKey={s.code}
@@ -115,7 +115,14 @@ export default function SlopeChart({ data }) {
                 strokeWidth={2.5}
                 dot={{ r: 5, strokeWidth: 2, fill: "#FFFFFF" }}
                 connectNulls
-                isAnimationActive={false}
+                // Animation declenchee a chaque montage du composant
+                // (donc a chaque clic sur l'onglet Spot) : la ligne se
+                // revele de gauche a droite, S16 -> S17. Cascade de 150ms
+                // entre chaque serie pour un effet "vague".
+                isAnimationActive={true}
+                animationDuration={1400}
+                animationEasing="ease-out"
+                animationBegin={i * 200}
               >
                 {/* Label de valeur : prix a gauche (S-1), prix + fleche Δ%
                     a droite (S courante) pour donner un signal directionnel

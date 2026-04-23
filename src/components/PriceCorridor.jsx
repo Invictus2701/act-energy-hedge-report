@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 /**
  * PriceCorridor — Bullet chart compact + deltas contextualises par sigma.
  *
@@ -98,6 +100,7 @@ function deltaStyle(varPct) {
 export default function PriceCorridor({
   current, min, max, avg,
   varD1, varW1, sigmaD,
+  animationDelay = 0,
 }) {
   if (min == null || max == null || max <= min) {
     return (
@@ -111,6 +114,16 @@ export default function PriceCorridor({
   const clamp = (x) => Math.max(0, Math.min(100, x));
   const currPct = current != null ? clamp(((current - min) / range) * 100) : null;
   const avgPct  = avg     != null ? clamp(((avg     - min) / range) * 100) : null;
+
+  // Animation : a chaque montage on part de la position "moyenne" (avgPct)
+  // puis on glisse vers la position reelle du prix actuel (currPct).
+  // Le decalage animationDelay permet de cascader les lignes du tableau.
+  const [pos, setPos] = useState(avgPct != null ? avgPct : currPct);
+  useEffect(() => {
+    if (currPct == null) return;
+    const t = setTimeout(() => setPos(currPct), animationDelay + 60);
+    return () => clearTimeout(t);
+  }, [currPct, animationDelay]);
 
   // Couleur du point courant selon position dans la plage YTD
   let dotColor = C.navy;
@@ -129,16 +142,17 @@ export default function PriceCorridor({
     >
       {/* Colonne gauche : bullet chart (prix + track + min/max/moy) */}
       <div className="flex-1 min-w-[220px]">
-        {/* Valeur actuelle flottante au-dessus du point */}
+        {/* Valeur actuelle flottante au-dessus du point (anime avec lui) */}
         <div className="relative h-4">
           {currPct != null && (
             <div
               className="absolute text-sm font-bold whitespace-nowrap tabular-nums"
               style={{
-                left: `${currPct}%`,
+                left: `${pos}%`,
                 transform: "translateX(-50%)",
                 bottom: 0,
                 color: C.navy,
+                transition: "left 1.4s cubic-bezier(0.22, 1, 0.36, 1)",
               }}
             >
               {fmt(current)}
@@ -164,11 +178,14 @@ export default function PriceCorridor({
             <div
               className="absolute top-[-3px] w-[14px] h-[14px] rounded-full"
               style={{
-                left: `${currPct}%`,
+                left: `${pos}%`,
                 transform: "translateX(-50%)",
                 backgroundColor: dotColor,
                 border: "2px solid #FFFFFF",
                 boxShadow: "0 1px 2px rgba(0,0,0,0.15)",
+                // ease-out-expo : demarre vite puis ralentit nettement,
+                // donne un effet "le point trouve sa place".
+                transition: "left 1.4s cubic-bezier(0.22, 1, 0.36, 1)",
               }}
               title={`Actuel : ${fmt(current)}`}
             />
