@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import BelpexHourlyChart from "./components/spot/BelpexHourlyChart";
 import TtfDahDailyChart from "./components/spot/TtfDahDailyChart";
 import MonthlyAvgChart from "./components/spot/MonthlyAvgChart";
+import SlopeChart from "./components/spot/SlopeChart";
 
 const C = { navy: "#262E4B", teal: "#86B9B7" };
 
@@ -36,6 +37,12 @@ export default function Spot() {
         <h2 className="text-2xl font-bold tracking-wider uppercase" style={{ color: C.navy }}>
           Marché Spot
         </h2>
+      </div>
+
+      {/* Slope chart mixe Gaz + Electricite -> place en tete, pleine largeur,
+          et sur sa propre page PDF. */}
+      <div className="pdf-section mb-6">
+        <SlopeChart data={data.weeklySlope} />
       </div>
 
       {/* Chaque ligne de graphiques = une pdf-section (1 page PDF dediee). */}

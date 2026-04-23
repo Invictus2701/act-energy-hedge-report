@@ -1,6 +1,6 @@
 {
   "meta": {
-    "generatedAt": "2026-04-23T11:47:42Z",
+    "generatedAt": "2026-04-23T14:32:31Z",
     "source": "Luminus Business - EPEX Spot (Belpex) / ICIS Heren (TTF DAH)",
     "sourceDir": "2026-04-23"
   },
@@ -668,6 +668,62 @@
           null,
           null
         ]
+      }
+    ]
+  },
+  "weeklySlope": {
+    "weeks": [
+      {
+        "label": "Semaine 16 (13/04 -> 19/04)"
+      },
+      {
+        "label": "Semaine 17 (20/04 -> 26/04)"
+      }
+    ],
+    "series": [
+      {
+        "code": "GAS_BASE",
+        "label": "Gaz (Base)",
+        "group": "GAS",
+        "values": [
+          43.01,
+          41.58
+        ],
+        "delta": -1.43,
+        "deltaPct": -3.32
+      },
+      {
+        "code": "ELEC_BASE",
+        "label": "\u00c9lectricit\u00e9 (Base)",
+        "group": "ELEC",
+        "values": [
+          106.18,
+          80.68
+        ],
+        "delta": -25.5,
+        "deltaPct": -24.02
+      },
+      {
+        "code": "ELEC_PEAK",
+        "label": "\u00c9lectricit\u00e9 (HP)",
+        "group": "ELEC",
+        "values": [
+          127.38,
+          107.15
+        ],
+        "delta": -20.23,
+        "deltaPct": -15.88
+      },
+      {
+        "code": "ELEC_OFFPEAK",
+        "label": "\u00c9lectricit\u00e9 (HC)",
+        "group": "ELEC",
+        "values": [
+          93.46,
+          64.8
+        ],
+        "delta": -28.66,
+        "deltaPct": -30.67
       }
     ]
   }

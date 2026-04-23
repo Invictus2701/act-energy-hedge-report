@@ -67,6 +67,17 @@ def _to_float(v):
         return None
 
 
+def _avg(values, predicate=None):
+    """Moyenne des valeurs non-nulles, eventuellement filtrees par predicate(idx)."""
+    filtered = [
+        v for i, v in enumerate(values)
+        if v is not None and (predicate is None or predicate(i))
+    ]
+    if not filtered:
+        return None
+    return round(sum(filtered) / len(filtered), 2)
+
+
 # ──────────────────────────────────────────────────────────────────
 #  Parsers
 # ──────────────────────────────────────────────────────────────────
@@ -154,6 +165,65 @@ def parse_monthly_avg(df: pd.DataFrame, keep_last_n_years: int = 3) -> dict:
     return {"years": years}
 
 
+def build_weekly_slope(belpex_hourly: dict, ttf_daily: dict) -> dict:
+    """Reduit les 2 semaines Belpex (168h) + TTF DAH (7j) en moyennes hebdo :
+       - Gaz Base         : moyenne des 7 prix journaliers
+       - Electricite Base : moyenne des 168 prix horaires
+       - Electricite Peak : moyenne des heures 8..19 (12 heures/jour x 7 = 84)
+       - Electricite Off-peak : moyenne des heures 20..7 (84 heures)
+    Produit une structure prete pour un Slope Chart (2 colonnes + N series)."""
+    if not belpex_hourly or not belpex_hourly.get("weeks"):
+        return None
+
+    weeks_info = []
+    # Convention tarifaire belge (HP / HC) appliquee 7j/7, week-ends inclus :
+    #   HP (Heures Pleines) : 07h-11h ET 17h-22h  -> 9h/jour => 63h/semaine
+    #   HC (Heures Creuses) : 22h-07h ET 11h-17h  -> 15h/jour => 105h/semaine
+    # L'indice horaire i va de 0 (Lun 00h) a 167 (Dim 23h).
+    def hour_of(i): return i % 24
+    def is_hp(h):   return (7 <= h <= 10) or (17 <= h <= 21)
+    peak_pred    = lambda i: is_hp(hour_of(i))
+    offpeak_pred = lambda i: not is_hp(hour_of(i))
+
+    elec_base = []
+    elec_peak = []
+    elec_off  = []
+    week_labels = []
+    for w in belpex_hourly["weeks"]:
+        vals = w["values"]
+        elec_base.append(_avg(vals))
+        elec_peak.append(_avg(vals, peak_pred))
+        elec_off.append(_avg(vals, offpeak_pred))
+        week_labels.append(w["label"])
+        weeks_info.append({"label": w["label"]})
+
+    # Moyenne hebdo Gaz Base alignee sur les memes labels de semaine.
+    # On suppose que ttf_daily.weeks contient les 2 memes semaines ISO.
+    gas_base = [None, None]
+    if ttf_daily and ttf_daily.get("weeks"):
+        for i, w in enumerate(ttf_daily["weeks"][: len(week_labels)]):
+            gas_base[i] = _avg(w["values"])
+
+    series = [
+        {"code": "GAS_BASE",     "label": "Gaz (Base)",          "group": "GAS",  "values": gas_base},
+        {"code": "ELEC_BASE",    "label": "Électricité (Base)",  "group": "ELEC", "values": elec_base},
+        {"code": "ELEC_PEAK",    "label": "Électricité (HP)",    "group": "ELEC", "values": elec_peak},
+        {"code": "ELEC_OFFPEAK", "label": "Électricité (HC)",    "group": "ELEC", "values": elec_off},
+    ]
+
+    # Delta et delta % calcules ici pour que le frontend n'ait qu'a afficher.
+    for s in series:
+        v0, v1 = s["values"][0], s["values"][-1]
+        if v0 is not None and v1 is not None and v0 != 0:
+            s["delta"]    = round(v1 - v0, 2)
+            s["deltaPct"] = round((v1 - v0) / v0 * 100, 2)
+        else:
+            s["delta"]    = None
+            s["deltaPct"] = None
+
+    return {"weeks": weeks_info, "series": series}
+
+
 def parse_ttf_daily(df: pd.DataFrame) -> dict:
     """Time series TTF DAH journaliere. On renvoie les 2 dernieres semaines
     ISO completes pour une comparaison jour par jour (Lun->Dim)."""
@@ -234,6 +304,15 @@ def main() -> int:
     except Exception as e:
         print(f"[WARN] GasTtfDahM_avg : {e}", file=sys.stderr)
         out["ttfDahMonthly"] = None
+
+    # Slope Chart : moyennes hebdo Base / Peak / Off-peak (Elec) + Base (Gaz)
+    try:
+        out["weeklySlope"] = build_weekly_slope(out.get("belpexHourly"), out.get("ttfDahDaily"))
+        if out["weeklySlope"]:
+            print(f"[OK]  Slope hebdo    : {len(out['weeklySlope']['series'])} series")
+    except Exception as e:
+        print(f"[WARN] weekly slope : {e}", file=sys.stderr)
+        out["weeklySlope"] = None
 
     OUT_FP.write_text(json.dumps(out, indent=2), encoding="utf-8")
     print(f"[DONE] -> {OUT_FP.relative_to(ROOT)}")

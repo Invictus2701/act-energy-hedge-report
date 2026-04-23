@@ -29,3 +29,15 @@ body {
 body.pdf-exporting .corridor-details {
   display: block !important;
 }
+
+/* SlopeChart : meme logique pour la bande de deltas sous le graphique,
+   visible au survol du chart OU pendant l'export PDF. */
+.slope-deltas {
+  display: none;
+}
+.slope-chart:hover .slope-deltas {
+  display: flex;
+}
+body.pdf-exporting .slope-deltas {
+  display: flex !important;
+}
