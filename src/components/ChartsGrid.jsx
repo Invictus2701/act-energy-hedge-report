@@ -199,19 +199,10 @@ export default function ChartsGrid() {
 
   if (!history) return null;
 
-  // Groupe les graphiques en lignes de 2 (Elec + Gaz), chaque ligne
-  // correspond a une granularite (Annuel / Trimestriel / Mensuel).
-  // Chaque ligne est une .pdf-section => une page PDF dediee.
-  const rows = [];
-  for (let i = 0; i < CHARTS.length; i += 2) {
-    rows.push(CHARTS.slice(i, i + 2));
-  }
-  const ROW_TITLES = ["Annuel", "Trimestriel", "Mensuel"];
-
   return (
-    <section className="mt-10">
-      {/* Title : reste en dehors des pdf-section pour ne pas occuper une
-          page entiere a lui seul. Apparait en tete de la 1ere ligne via CSS. */}
+    // Une seule .pdf-section qui englobe tout : titre + grille 3x2.
+    // => 1 page PDF pour l'ensemble du bloc "Prix & Tendances du Marche".
+    <section className="pdf-section mt-10">
       <div className="flex items-center gap-3 mb-5">
         <TrendIcon />
         <h2
@@ -222,23 +213,17 @@ export default function ChartsGrid() {
         </h2>
       </div>
 
-      {/* Une .pdf-section par ligne (2 graphiques Elec + Gaz). */}
-      {rows.map((row, i) => (
-        <div
-          key={ROW_TITLES[i] || i}
-          className="pdf-section grid grid-cols-1 md:grid-cols-2 gap-6 mb-6"
-        >
-          {row.map((cfg) => (
-            <ChartPanel
-              key={cfg.title}
-              title={cfg.title}
-              codes={cfg.codes}
-              labels={cfg.labels}
-              history={history}
-            />
-          ))}
-        </div>
-      ))}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {CHARTS.map((cfg) => (
+          <ChartPanel
+            key={cfg.title}
+            title={cfg.title}
+            codes={cfg.codes}
+            labels={cfg.labels}
+            history={history}
+          />
+        ))}
+      </div>
     </section>
   );
 }

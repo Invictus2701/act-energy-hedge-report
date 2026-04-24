@@ -39,18 +39,16 @@ export default function Spot() {
         </h2>
       </div>
 
-      {/* Slope chart mixe Gaz + Electricite -> place en tete, pleine largeur,
-          et sur sa propre page PDF. */}
+      {/* Slope chart = sa propre page PDF. */}
       <div className="pdf-section mb-6">
         <SlopeChart data={data.weeklySlope} />
       </div>
 
-      {/* Chaque ligne de graphiques = une pdf-section (1 page PDF dediee). */}
-      <div className="pdf-section grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      {/* Les 4 graphiques restants = une seule .pdf-section (grille 2x2)
+          => tiennent sur une page PDF unique. */}
+      <div className="pdf-section grid grid-cols-1 md:grid-cols-2 gap-6">
         <BelpexHourlyChart data={data.belpexHourly} />
         <TtfDahDailyChart  data={data.ttfDahDaily} />
-      </div>
-      <div className="pdf-section grid grid-cols-1 md:grid-cols-2 gap-6">
         <MonthlyAvgChart
           title="Belpex — Moyennes mensuelles par année"
           source="EPEX Spot Belgium (Belpex)"

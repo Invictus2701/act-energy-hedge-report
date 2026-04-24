@@ -45,35 +45,32 @@ body.pdf-exporting .slope-deltas {
 /* ─────────────────────────────────────────────────────────────
    Regles @media print : le bouton "Telecharger PDF" declenche
    window.print() qui ouvre le dialogue natif du navigateur.
-   Ces regles definissent ce qui doit apparaitre sur le PDF.
    ───────────────────────────────────────────────────────────── */
 @media print {
-  /* Format par defaut : A4 paysage, marges raisonnables */
   @page {
     size: A4 landscape;
-    margin: 10mm;
+    margin: 8mm;
   }
 
-  /* Preserver les couleurs de fond (pills colorees, corridors, etc.) */
-  * {
+  /* Preserver les couleurs de fond (pills, corridors, etc.). */
+  *, *::before, *::after {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
   }
 
-  /* Masquer les elements d'UI : header superieur, tabs, boutons */
-  body > div > header,
-  body > div > nav,
-  button {
+  /* Masque tout le chrome d'interface (quel que soit le niveau du DOM). */
+  header, nav, button {
     display: none !important;
   }
 
-  /* Zone principale : pleine largeur, sans conteneur central */
+  /* Zone de contenu en pleine largeur. */
   #cockpit-printable {
     max-width: 100% !important;
     padding: 0 !important;
+    margin: 0 !important;
   }
 
-  /* Reveler les details habituellement masques (Min/Max/Moy + deltas slope) */
+  /* Reveler les details habituellement masques (Min/Max/Moy + bande slope). */
   .corridor-details {
     display: block !important;
   }
@@ -81,22 +78,33 @@ body.pdf-exporting .slope-deltas {
     display: flex !important;
   }
 
-  /* Un saut de page avant chaque .pdf-section, jamais de coupe au milieu */
+  /* Chaque .pdf-section = une page.
+     - break-after: page  => saut de page apres chaque section
+     - break-inside: avoid => le navigateur essaie de garder la section
+       entiere sur la meme page.
+     Pas de saut apres la derniere section (page finale pas vide). */
   .pdf-section {
-    page-break-before: always;
-    break-before: page;
-    page-break-inside: avoid;
+    break-after: page;
+    page-break-after: always;
     break-inside: avoid;
+    page-break-inside: avoid;
   }
-  /* La premiere section n'a pas besoin de saut de page avant */
-  .pdf-section:first-of-type {
-    page-break-before: auto;
-    break-before: auto;
+  .pdf-section:last-of-type {
+    break-after: auto;
+    page-break-after: auto;
   }
 
-  /* Couleurs : forcer le fond blanc et conserver le texte en navy */
   body {
     background: #FFFFFF !important;
     color: #262E4B !important;
+  }
+
+  /* Reduit legerement les graphiques pour que la grille 3x2 du Future
+     + la grille 2x2 du Spot tiennent sur une seule page A4 paysage. */
+  .recharts-responsive-container {
+    max-height: 150px !important;
+  }
+  .slope-chart .recharts-responsive-container {
+    max-height: 260px !important;
   }
 }
