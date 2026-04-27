@@ -1,17 +1,12 @@
 {
   "meta": {
     "module": "Statistiques",
-    "generatedAt": "2026-04-24T20:07:01Z",
+    "generatedAt": "2026-04-27T19:53:27Z",
     "source": "Luminus Business \u2014 https://my.luminusbusiness.be/market-info/",
     "currency": "EUR",
     "unit": "MWh",
     "ytdStart": "2026-01-01",
     "sessions": [
-      {
-        "label": "17/4",
-        "weekday": "Vendredi",
-        "date": "2026-04-17"
-      },
       {
         "label": "20/4",
         "weekday": "Lundi",
@@ -36,6 +31,11 @@
         "label": "24/4",
         "weekday": "Vendredi",
         "date": "2026-04-24"
+      },
+      {
+        "label": "27/4",
+        "weekday": "Lundi",
+        "date": "2026-04-27"
       }
     ]
   },
@@ -47,12 +47,12 @@
           "code": "BE_POWER_BASE_M1",
           "label": "BE M+1 base",
           "prices": [
-            78.95,
             80.27,
             82.08,
             82.16,
             82.48,
-            82.67
+            82.67,
+            null
           ],
           "varD1": 0.23,
           "varW1": 4.71,
@@ -65,12 +65,12 @@
           "code": "BE_POWER_BASE_Q1",
           "label": "BE T+1 base",
           "prices": [
-            85.39,
             87.96,
             89.6,
             89.88,
             91.07,
-            91.09
+            91.09,
+            null
           ],
           "varD1": 0.02,
           "varW1": 6.68,
@@ -83,12 +83,12 @@
           "code": "BE_POWER_BASE_Q2",
           "label": "BE T+2 base",
           "prices": [
-            97.98,
             98.4,
             100.49,
             101.67,
             103.29,
-            103.95
+            103.95,
+            null
           ],
           "varD1": 0.64,
           "varW1": 6.09,
@@ -101,12 +101,12 @@
           "code": "BE_POWER_BASE_Y1",
           "label": "BE A+1 base",
           "prices": [
-            82.61,
             83.12,
             84.05,
             85.92,
             86.43,
-            87.28
+            87.28,
+            null
           ],
           "varD1": 0.98,
           "varW1": 5.66,
@@ -119,12 +119,12 @@
           "code": "BE_POWER_BASE_Y2",
           "label": "BE A+2 base",
           "prices": [
-            74.18,
             74.55,
             74.91,
             75.17,
             75.91,
-            76.77
+            76.77,
+            null
           ],
           "varD1": 1.13,
           "varW1": 3.49,
@@ -137,12 +137,12 @@
           "code": "BE_POWER_BASE_Y3",
           "label": "BE A+3 base",
           "prices": [
-            71.13,
             70.97,
             71.0,
             71.2,
             71.59,
-            71.67
+            71.67,
+            null
           ],
           "varD1": 0.11,
           "varW1": 0.76,
@@ -160,16 +160,16 @@
           "code": "TTF_NG_M1",
           "label": "TTF M+1",
           "prices": [
-            38.77,
             40.29,
             41.93,
             43.55,
             44.5,
-            44.86
+            44.86,
+            44.65
           ],
-          "varD1": 0.82,
-          "varW1": 15.71,
-          "sigmaD": 6.337,
+          "varD1": -0.48,
+          "varW1": 10.81,
+          "sigmaD": 6.122,
           "avg": 44.59,
           "max": 53.25,
           "min": 38.77
@@ -178,17 +178,17 @@
           "code": "TTF_NG_Q1",
           "label": "TTF T+1",
           "prices": [
-            38.84,
             40.15,
             41.8,
             43.52,
             44.37,
-            44.91
+            44.91,
+            44.73
           ],
-          "varD1": 1.21,
-          "varW1": 15.63,
-          "sigmaD": 6.106,
-          "avg": 44.5,
+          "varD1": -0.38,
+          "varW1": 11.43,
+          "sigmaD": 5.899,
+          "avg": 44.52,
           "max": 53.14,
           "min": 38.84
         },
@@ -196,17 +196,17 @@
           "code": "TTF_NG_Q2",
           "label": "TTF T+2",
           "prices": [
-            38.81,
             39.92,
             41.33,
             43.01,
             43.9,
-            44.62
+            44.62,
+            44.49
           ],
-          "varD1": 1.65,
-          "varW1": 14.97,
-          "sigmaD": 6.306,
-          "avg": 38.33,
+          "varD1": -0.3,
+          "varW1": 11.44,
+          "sigmaD": 6.267,
+          "avg": 38.41,
           "max": 60.89,
           "min": 26.21
         },
@@ -214,17 +214,17 @@
           "code": "TTF_NG_Y1",
           "label": "TTF A+1",
           "prices": [
-            33.21,
             33.92,
             34.66,
             35.98,
             36.49,
-            37.49
+            37.49,
+            37.15
           ],
-          "varD1": 2.75,
-          "varW1": 12.91,
-          "sigmaD": 4.412,
-          "avg": 31.84,
+          "varD1": -0.93,
+          "varW1": 9.5,
+          "sigmaD": 4.387,
+          "avg": 31.91,
           "max": 46.68,
           "min": 24.74
         },
@@ -232,17 +232,17 @@
           "code": "TTF_NG_Y2",
           "label": "TTF A+2",
           "prices": [
-            26.39,
             26.8,
             27.0,
             27.63,
             27.9,
-            28.85
+            28.85,
+            28.32
           ],
-          "varD1": 3.39,
-          "varW1": 9.31,
-          "sigmaD": 2.686,
-          "avg": 25.45,
+          "varD1": -1.82,
+          "varW1": 5.68,
+          "sigmaD": 2.679,
+          "avg": 25.49,
           "max": 32.21,
           "min": 22.71
         },
@@ -250,17 +250,17 @@
           "code": "TTF_NG_Y3",
           "label": "TTF A+3",
           "prices": [
-            23.45,
             23.42,
             23.55,
             23.69,
             23.73,
-            24.25
+            24.25,
+            24.0
           ],
-          "varD1": 2.2,
-          "varW1": 3.4,
-          "sigmaD": 1.3,
-          "avg": 22.7,
+          "varD1": -1.04,
+          "varW1": 2.47,
+          "sigmaD": 1.297,
+          "avg": 22.71,
           "max": 25.21,
           "min": 21.03
         }
