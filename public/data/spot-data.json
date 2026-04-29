@@ -1,8 +1,8 @@
 {
   "meta": {
-    "generatedAt": "2026-04-28T20:47:35Z",
+    "generatedAt": "2026-04-29T19:59:28Z",
     "source": "Luminus Business - EPEX Spot (Belpex) / ICIS Heren (TTF DAH)",
-    "sourceDir": "2026-04-28"
+    "sourceDir": "2026-04-29"
   },
   "belpexHourly": {
     "xLabels": [
@@ -424,30 +424,30 @@
           118.6,
           96.59,
           85.31,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
-          null,
+          80.62,
+          78.95,
+          77.38,
+          74.61,
+          79.02,
+          87.03,
+          91.45,
+          98.73,
+          74.31,
+          36.32,
+          0.0,
+          -3.26,
+          -13.59,
+          -31.25,
+          -27.33,
+          -11.31,
+          -1.71,
+          17.16,
+          76.4,
+          124.29,
+          143.07,
+          116.55,
+          109.9,
+          101.61,
           null,
           null,
           null,
@@ -607,7 +607,7 @@
         "values": [
           44.88,
           44.518,
-          null,
+          44.059,
           null,
           null,
           null,
@@ -687,10 +687,10 @@
         "group": "GAS",
         "values": [
           42.92,
-          44.7
+          44.49
         ],
-        "delta": 1.78,
-        "deltaPct": 4.15
+        "delta": 1.57,
+        "deltaPct": 3.66
       },
       {
         "code": "ELEC_BASE",
@@ -698,10 +698,10 @@
         "group": "ELEC",
         "values": [
           63.88,
-          69.53
+          66.51
         ],
-        "delta": 5.65,
-        "deltaPct": 8.84
+        "delta": 2.63,
+        "deltaPct": 4.12
       },
       {
         "code": "ELEC_PEAK",
@@ -709,10 +709,10 @@
         "group": "ELEC",
         "values": [
           99.08,
-          97.92
+          92.52
         ],
-        "delta": -1.16,
-        "deltaPct": -1.17
+        "delta": -6.56,
+        "deltaPct": -6.62
       },
       {
         "code": "ELEC_OFFPEAK",
@@ -720,10 +720,10 @@
         "group": "ELEC",
         "values": [
           42.77,
-          52.49
+          50.9
         ],
-        "delta": 9.72,
-        "deltaPct": 22.73
+        "delta": 8.13,
+        "deltaPct": 19.01
       }
     ]
   }
